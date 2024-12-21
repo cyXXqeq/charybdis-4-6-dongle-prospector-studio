@@ -102,7 +102,7 @@
             bindings = <
 &kp N1   &kp N2            &kp N3            &kp N4         &kp N5              &kp N6   &kp N7 &kp N8              &kp N9         &kp N0             &kp N1                &kp N1
 &kp ESC  &kp Q             &kp W             &kp E          &kp R               &kp T    &kp Y  &kp U               &kp I          &kp O              &kp P                 &kp BSPC
-&kp TAB  &u_mt LEFT_GUI A  &u_mt LEFT_ALT S  &u_mt LCTRL D  &u_mt LEFT_SHIFT F  &kp G    &kp H  &u_mt LEFT_SHIFT J  &u_mt RCTRL K  &u_mt RIGHT_ALT L  &u_mt RIGHT_GUI SEMI  &kp APOS
+&kp TAB  &kp A             &kp S             &kp D          &kp F               &kp G    &kp H  &kp J               &kp K          &kp L              &kp SEMI              &kp APOS
 &mo 5    &kp Z             &kp X             &kp C          &kp V               &kp B    &kp N  &kp M               &kp COMMA      &kp DOT            &kp FSLH              &mo 5
                                              &kp LGUI       &kp SPACE           &mo 1    &mo 2  &kp RET &kp N1 &kp N1 &mo 1
             >;
@@ -111,10 +111,10 @@
         Lower {
             label = "Lower";
             bindings = <
-&bootloader  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &bootloader
+&bootloader  &trans    &trans    &trans     &trans  &trans    &trans           &trans                &trans          &trans  &trans    &bootloader
 &sys_reset   &trans    &kp UP    &trans     &trans  &trans    &kp N7           &kp N8                &kp N9          &kp N0  &kp HOME  &sys_reset
-&trans  &kp LEFT  &kp DOWN  &kp RIGHT  &trans  &trans    &kp N4           &u_mt RIGHT_SHIFT N5  &u_mt RCTRL N6  &trans  &trans    &kp F10
-&trans  &trans    &trans    &trans     &trans  &trans    &kp N1           &kp N2                &kp N3          &trans  &trans    &kp F20
+&trans       &kp LEFT  &kp DOWN  &kp RIGHT  &trans  &trans    &kp N4           &kp N5                &hp N6          &trans  &trans    &kp F10
+&trans       &trans    &trans    &trans     &trans  &trans    &kp N1           &kp N2                &kp N3          &trans  &trans    &kp F20
                             &trans     &trans  &trans    &lt 3 BACKSPACE  &kp LSHFT &trans  &trans &trans
             >;
         };
@@ -122,9 +122,9 @@
         Raise {
             label = "Raise";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
+&trans      &trans        &trans       &trans      &trans    &trans       &trans     &trans                   &trans            &trans                &trans                &trans
 &bt BT_CLR  &kp EXCL      &kp AT       &kp HASH    &kp DLLR  &kp PRCNT    &kp CARET  &kp AMPS                 &kp KP_MULTIPLY   &kp LPAR              &kp RPAR              &kp DEL
-&trans      &trans        &bt BT_PRV   &bt BT_NXT  &trans    &trans       &kp UNDER  &u_mt RIGHT_SHIFT EQUAL  &u_mt RCTRL LBKT  &u_mt RIGHT_ALT RBKT  &u_mt RIGHT_GUI BSLH  &kp GRAVE
+&trans      &trans        &bt BT_PRV   &bt BT_NXT  &trans    &trans       &kp UNDER  &kp EQUAL                &kp LBKT          &kp RBKT              &kp BSLH              &kp GRAVE
 &trans      &out OUT_TOG  &bootloader  &trans      &trans    &trans       &kp MINUS  &kp PLUS                 &kp LBRC          &kp RBRC              &kp PIPE              &kp TILDE
                                        &trans      &trans    &mo 3        &trans     &trans &trans  &trans &trans
             >;
