@@ -64,34 +64,6 @@
                 <&mo>,
                 <&kp>;
         };
-
-        u_mt: u_mt {
-            compatible = "zmk,behavior-hold-tap";
-            label = "u_mt";
-            #binding-cells = <2>;
-            tapping_term_ms = <U_TAPPING_TERM>;
-            flavor = "tap-preferred";
-            bindings = <&kp>, <&kp>;
-        };
-
-        u_lt: u_lt {
-            compatible = "zmk,behavior-hold-tap";
-            label = "u_lt";
-            #binding-cells = <2>;
-            tapping_term_ms = <U_TAPPING_TERM>;
-            flavor = "tap-preferred";
-            bindings = <&mo>, <&kp>;
-        };
-
-        Shift_Enter: Shift_Enter {
-            compatible = "zmk,behavior-hold-tap";
-            label = "SHIFT_ENTER";
-            bindings = <&kp>, <&kp>;
-
-            #binding-cells = <2>;
-            hold-trigger-key-positions = <40>;
-            tapping-term-ms = <100>;
-        };
     };
 
     keymap {
@@ -100,65 +72,65 @@
         Base {
             label = "Base";
             bindings = <
-&kp N1   &kp N2            &kp N3            &kp N4         &kp N5              &kp N6   &kp N7 &kp N8              &kp N9         &kp N0             &kp N1                &kp N1
-&kp ESC  &kp Q             &kp W             &kp E          &kp R               &kp T    &kp Y  &kp U               &kp I          &kp O              &kp P                 &kp BSPC
-&kp TAB  &kp A             &kp S             &kp D          &kp F               &kp G    &kp H  &kp J               &kp K          &kp L              &kp SEMI              &kp APOS
-&mo 5    &kp Z             &kp X             &kp C          &kp V               &kp B    &kp N  &kp M               &kp COMMA      &kp DOT            &kp FSLH              &mo 5
-                                             &kp LGUI       &kp SPACE           &mo 1    &mo 2  &kp RET &kp N1 &kp N1 &mo 1
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&kp TAB  &kp Q  &kp W      &kp E      &kp R  &kp T    &kp Y    &kp U      &kp I    &kp O     &kp P    &kp BSPC
+&kp ESC  &kp A  &kp S      &kp D      &kp F  &kp G    &kp H    &kp J      &kp K    &kp L  &kp SEMI    &kp APOS
+&kp LSHFT  &kp Z  &kp X      &kp C      &kp V  &kp B    &kp N    &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp RSHIFT
+                         &kp LCTRL  &kp SPACE  &mo 1    &mo 2  &kp RET  &trans  &trans  &trans
             >;
         };
 
         Lower {
             label = "Lower";
             bindings = <
-&bootloader  &trans    &trans    &trans     &trans  &trans    &trans           &trans                &trans          &trans  &trans    &bootloader
-&sys_reset   &trans    &kp UP    &trans     &trans  &trans    &kp N7           &kp N8                &kp N9          &kp N0  &kp HOME  &sys_reset
-&trans       &kp LEFT  &kp DOWN  &kp RIGHT  &trans  &trans    &kp N4           &kp N5                &hp N6          &trans  &trans    &kp F10
-&trans       &trans    &trans    &trans     &trans  &trans    &kp N1           &kp N2                &kp N3          &trans  &trans    &kp F20
-                            &trans     &trans  &trans    &lt 3 BACKSPACE  &kp LSHFT &trans  &trans &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans    &trans    &kp UP     &trans     &trans    &trans       &kp N7   &kp N8  &kp N9   &kp N0  &kp HOME   &kp F1
+&trans  &kp LEFT  &kp DOWN  &kp RIGHT     &trans    &trans       &kp N4   &kp N5  &kp N6    &none    &trans  &kp F10
+&kp LEFT_ALT    &trans    &trans     &trans  &kp MINUS  &kp PLUS       &kp N1   &kp N2  &kp N3  &kp DOT    &trans  &kp F20
+                                   &kp LGUI  &kp SPACE    &trans    &kp RCTRL  &kp RET  &trans  &trans  &trans
             >;
         };
 
         Raise {
             label = "Raise";
             bindings = <
-&trans      &trans        &trans       &trans      &trans    &trans       &trans     &trans                   &trans            &trans                &trans                &trans
-&bt BT_CLR  &kp EXCL      &kp AT       &kp HASH    &kp DLLR  &kp PRCNT    &kp CARET  &kp AMPS                 &kp KP_MULTIPLY   &kp LPAR              &kp RPAR              &kp DEL
-&trans      &trans        &bt BT_PRV   &bt BT_NXT  &trans    &trans       &kp UNDER  &kp EQUAL                &kp LBKT          &kp RBKT              &kp BSLH              &kp GRAVE
-&trans      &out OUT_TOG  &bootloader  &trans      &trans    &trans       &kp MINUS  &kp PLUS                 &kp LBRC          &kp RBRC              &kp PIPE              &kp TILDE
-                                       &trans      &trans    &mo 3        &trans     &trans &trans  &trans &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans      &kp EXCL       &kp AT    &kp HASH   &kp DLLR     &kp PRCNT    &kp CARET   &kp AMPS  &kp KP_MULTIPLY  &kp LPAR  &kp RPAR    &kp DEL
+&trans    &bt BT_CLR   &bt BT_PRV  &bt BT_NXT     &trans         &to 3    &kp UNDER  &kp EQUAL         &kp LBKT  &kp RBKT  &kp BSLH  &kp GRAVE
+&trans  &out OUT_TOG  &bootloader      &trans     &trans        &trans    &kp MINUS   &kp PLUS         &kp LBRC  &kp RBRC  &kp PIPE  &kp TILDE
+                                     &kp LGUI  &kp SPACE  &kp LEFT_ALT       &trans    &bootloader  &trans  &trans  &trans
             >;
         };
 
         Game {
             label = "Game";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans   &kp F1  &kp F2   &kp F3   &kp F4     &bt BT_SEL 0  &bt BT_SEL 1      &bt BT_SEL 2       &bt BT_SEL 3     &bt BT_SEL 4  &bt BT_CLR
-&trans  &kp DEL  &kp F5  &kp F6   &kp F7   &kp F8     &out OUT_TOG  &kp K_PLAY_PAUSE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &kp C_MUTE    &kp LALT
-&trans  &trans   &kp F9  &kp F10  &kp F11  &kp F12    &trans        &trans            &trans             &trans           &trans        &to 0
-                         &trans   &trans   &trans     &trans        &trans &trans  &trans &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans        &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans         &sl 4      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans        &trans      &trans  &trans  &trans  &trans  &trans   &to 0
+                        &trans  &trans  &kp LEFT_ALT    &kp RGUI  &trans  &trans  &trans  &trans
             >;
         };
 
         Game_++ {
             label = "Game ++";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans     &trans  &trans       &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans     &trans  &trans       &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans     &trans  &trans       &trans  &trans  &trans  &trans  &trans  &trans
-                        &mkp LCLK  &trans  &mkp RCLK    &trans  &trans &trans  &trans &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&kt F5  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp NUMBER_4  &kp NUMBER_5    &kp LC(RA(Y))  &kp LC(RA(U))  &kp LC(RA(I))  &kp LC(RA(H))  &kp LC(RA(J))  &kp LC(RA(DEL))
+&to 3         &kp L         &kp O         &kp Y         &kp K         &kp G           &trans         &trans         &trans         &trans         &trans       &kp LA(F4)
+&kp F10         &none         &to 0         &none  &kp NUMBER_6  &kp NUMBER_7           &trans         &trans         &trans         &trans         &trans            &to 0
+                                            &kp J         &kp I         &kp M           &trans         &trans  &trans  &trans  &trans
             >;
         };
 
         Mouse {
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans     &trans  &trans       &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans     &trans  &trans       &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans     &trans  &trans       &trans  &trans  &trans  &trans  &trans  &trans
-                        &mkp LCLK  &trans  &mkp RCLK    &trans  &trans &trans  &trans &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans     &trans  &trans     &trans    &trans  &trans  &trans  &trans  &trans     &trans
+&trans  &trans  &trans     &trans  &trans     &trans    &trans  &trans  &trans  &trans  &trans     &trans
+&mkp MCLK  &trans  &trans     &trans  &trans     &trans    &trans  &trans  &trans  &trans  &trans  &mkp LCLK
+                           &mkp LCLK  &trans  &mkp RCLK    &trans  &trans  &trans  &trans  &trans
             >;
         };
     };
