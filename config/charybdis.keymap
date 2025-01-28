@@ -160,10 +160,15 @@
         Game {
             label = "Game";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans        &trans      &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans         &sl 4      &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans        &trans      &trans  &trans  &trans  &trans  &trans   &to 0
+            // ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮   ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
+                   &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &trans
+            // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+                   &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &trans
+            // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+                   &trans        &trans         &trans       &trans         &trans        &sl 4           &trans         &trans         &trans        &trans        &trans        &trans
+            // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+                   &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &to 0
+            // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
                                                               &trans       &trans         &trans            &trans        &trans    
             //                                           ╰─────────────┤─────────────┤─────────────┤   ├─────────────┼─────────────╯
                                                                             &trans        &trans            &trans
