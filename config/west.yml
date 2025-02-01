@@ -4,8 +4,8 @@ manifest:
       url-base: https://github.com/petejohanson
     - name: badjeff
       url-base: https://github.com/badjeff
-    - name: devpew 
-      url-base: https://github.com/devpew
+    - name: carrefinho 
+      url-base: https://github.com/carrefinho
     # Additional modules containing boards/shields/custom code can be listed here as well
     # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
   projects:
@@ -23,7 +23,7 @@ manifest:
       remote: badjeff
       revision: main
     - name: prospector-zmk-module
-      remote: devpew 
+      remote: carrefinho 
       revision: reduce-size
   self:
     path: config
