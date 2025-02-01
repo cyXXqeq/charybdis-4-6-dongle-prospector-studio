@@ -20,5 +20,8 @@ manifest:
     - name: zmk-input-behavior-listener
       remote: badjeff
       revision: main
+    - name: prospector-zmk-module
+      remote: minhe7735 
+      revision: reduce-size
   self:
     path: config
