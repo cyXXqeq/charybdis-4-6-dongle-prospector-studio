@@ -1,5 +1,4 @@
 #include "charybdis.dtsi"
-#include <input/processors.dtsi>
 
 / {
     chosen {
