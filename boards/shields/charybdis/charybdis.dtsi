@@ -1,0 +1,125 @@
+#include <dt-bindings/zmk/matrix_transform.h>
+#include <physical_layouts.dtsi>
+
+/ {
+    chosen {
+        zmk,kscan = &kscan0;
+        zmk,physical-layout = &charybdis_6col_layout;
+    };
+
+    default_transform: keymap_transform_0 {
+        compatible = "zmk,matrix-transform";
+        columns = <12>;
+        rows = <5>;
+
+        map = <
+	RC(0,0) RC(0,1) RC(0,2) RC(0,3) RC(0,4) RC(0,5)  RC(0,11) RC(0,10) RC(0,9) RC(0,8) RC(0,7) RC(0,6)
+	RC(1,0) RC(1,1) RC(1,2) RC(1,3) RC(1,4) RC(1,5)  RC(1,11) RC(1,10) RC(1,9) RC(1,8) RC(1,7) RC(1,6)
+	RC(2,0) RC(2,1) RC(2,2) RC(2,3) RC(2,4) RC(2,5)  RC(2,11) RC(2,10) RC(2,9) RC(2,8) RC(2,7) RC(2,6)
+    RC(3,0) RC(3,1) RC(3,2) RC(3,3) RC(3,4) RC(3,5)  RC(3,11) RC(3,10) RC(3,9) RC(3,8) RC(3,7) RC(3,6)
+				RC(4,3) RC(4,4) RC(4,1)  RC(4,7) RC(4,9)
+					RC(4,5) RC(4,2)	 RC(4,11)
+        >;
+    };
+	
+    kscan0: kscan {
+        diode-direction = "row2col";
+    };
+
+    charybdis_6col_layout: charybdis_6col_layout {
+        compatible = "zmk,physical-layout";
+        display-name = "Charybdis 4x6";
+
+        transform = <&default_transform>;
+
+        keys
+            // Left Half - Main Keys
+            //                       w   h    x    y     rot    rx    ry
+            = <&key_physical_attrs 100 100    0   38       0     0     0>
+            , <&key_physical_attrs 100 100  100   38       0     0     0>
+            , <&key_physical_attrs 100 100  200   12       0     0     0>
+            , <&key_physical_attrs 100 100  300    0       0     0     0>
+            , <&key_physical_attrs 100 100  400   12       0     0     0>
+            , <&key_physical_attrs 100 100  500   12       0     0     0>
+            , <&key_physical_attrs 100 100  900   12       0     0     0>
+            , <&key_physical_attrs 100 100 1000   12       0     0     0>
+            , <&key_physical_attrs 100 100 1100    0       0     0     0>
+            , <&key_physical_attrs 100 100 1200   12       0     0     0>
+            , <&key_physical_attrs 100 100 1300   38       0     0     0>
+            , <&key_physical_attrs 100 100 1400   38       0     0     0>
+
+            , <&key_physical_attrs 100 100    0  138       0     0     0>
+            , <&key_physical_attrs 100 100  100  138       0     0     0>
+            , <&key_physical_attrs 100 100  200  112       0     0     0>
+            , <&key_physical_attrs 100 100  300  100       0     0     0>
+            , <&key_physical_attrs 100 100  400  112       0     0     0>
+            , <&key_physical_attrs 100 100  500  112       0     0     0>
+            , <&key_physical_attrs 100 100  900  112       0     0     0>
+            , <&key_physical_attrs 100 100 1000  112       0     0     0>
+            , <&key_physical_attrs 100 100 1100  100       0     0     0>
+            , <&key_physical_attrs 100 100 1200  112       0     0     0>
+            , <&key_physical_attrs 100 100 1300  138       0     0     0>
+            , <&key_physical_attrs 100 100 1400  138       0     0     0>
+
+            , <&key_physical_attrs 100 100    0  238       0     0     0>
+            , <&key_physical_attrs 100 100  100  238       0     0     0>
+            , <&key_physical_attrs 100 100  200  212       0     0     0>
+            , <&key_physical_attrs 100 100  300  200       0     0     0>
+            , <&key_physical_attrs 100 100  400  212       0     0     0>
+            , <&key_physical_attrs 100 100  500  212       0     0     0>
+            , <&key_physical_attrs 100 100  900  212       0     0     0>
+            , <&key_physical_attrs 100 100 1000  212       0     0     0>
+            , <&key_physical_attrs 100 100 1100  200       0     0     0>
+            , <&key_physical_attrs 100 100 1200  212       0     0     0>
+            , <&key_physical_attrs 100 100 1300  238       0     0     0>
+            , <&key_physical_attrs 100 100 1400  238       0     0     0>
+
+            , <&key_physical_attrs 100 100    0  338       0     0     0>
+            , <&key_physical_attrs 100 100  100  338       0     0     0>
+            , <&key_physical_attrs 100 100  200  312       0     0     0>
+            , <&key_physical_attrs 100 100  300  300       0     0     0>
+            , <&key_physical_attrs 100 100  400  312       0     0     0>
+            , <&key_physical_attrs 100 100  500  312       0     0     0>
+            , <&key_physical_attrs 100 100  900  312       0     0     0>
+            , <&key_physical_attrs 100 100 1000  312       0     0     0>
+            , <&key_physical_attrs 100 100 1100  300       0     0     0>
+            , <&key_physical_attrs 100 100 1200  312       0     0     0>
+            , <&key_physical_attrs 100 100 1300  338       0     0     0>
+            , <&key_physical_attrs 100 100 1400  338       0     0     0>
+
+            // Thumb Clusters
+            //                       w   h    x    y     rot    rx    ry
+            , <&key_physical_attrs 100 100  348  414    900    398   790>
+            , <&key_physical_attrs 100 100  418  414    1500   398   790>
+            , <&key_physical_attrs 100 100  518  420    1500   398   790>
+            , <&key_physical_attrs 100 100  382  514    1500   398   790>
+            , <&key_physical_attrs 100 100  482  520    1500   398   790>
+            , <&key_physical_attrs 100 100 1052  420 (-3000)  1102   790>
+            , <&key_physical_attrs 100 100 1067  414 (-1500)  1102   790>
+            , <&key_physical_attrs 100 100 1052  520 (-3000)  1102   790>
+            ;
+    };
+
+    charybdis_position_map {
+        compatible = "zmk,physical-layout-position-map";
+
+        complete;
+
+        twelve {
+            physical-layout = <&charybdis_6col_layout>;
+            positions
+                = < 0  1  2  3  4  5  6  7  8  9 10 11 >
+                , <12 13 14 15 16 17 18 19 20 21 22 23 >
+                , <24 25 26 27 28 29 30 31 32 33 34 35 >
+                , <36 37 38 39 40 41 42 43 44 45 46 47 >
+                , <   48 49 50 51 52 53 54 55          >
+                ;
+        };
+    };
+};
+
+
+
+
+
+
