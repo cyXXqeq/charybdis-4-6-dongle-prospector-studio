@@ -221,7 +221,7 @@
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
              &trans         &trans       &trans         &trans       &trans         &trans           &trans       &kp HOME    &kp PAGE_DOWN  &kp PAGE_UP     &kp END       &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
-      &trans &mt LGUI LEFT_BRACKET &mt LALT RIGHT_BRACKET &mt LCTRL MINUS &mt LSHFT EQUAL &trans     &trans       &kp RIGHT      &kp DOWN       &kp UP       &kp LEFT       &trans
+      &trans &mt LGUI LEFT_BRACKET &mt LALT RIGHT_BRACKET &mt LCTRL MINUS &mt LSHFT EQUAL &trans     &trans       &kp LEFT      &kp DOWN       &kp UP       &kp RIGHT       &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
              &trans        &kp LPAR      &kp RPAR       &trans        &trans        &trans            &trans       &trans        &trans       &trans       &kp BACKSLASH    &trans
       // ╰─────────────┴─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┴─────────────╯
