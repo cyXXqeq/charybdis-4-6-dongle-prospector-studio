@@ -108,7 +108,7 @@
 
     macro_m1: macro_m1 {
       compatible = "zmk,behavior-macro";
-      label = "MACRO_LACKO";
+      label = "MACRO_M1";
       #binding-cells = <0>;
       wait-ms = <20>;
       tap-ms = <5>;
@@ -117,11 +117,11 @@
 
     macro_m2: macro_m2 {
       compatible = "zmk,behavior-macro";
-      label = "MACRO_LACK3";
+      label = "MACRO_M2";
       #binding-cells = <0>;
       wait-ms = <20>;
       tap-ms = <5>;
-      bindings = <&kp LS(L)>, <&kp A>, <&kp C>, <&kp K>, <&kp N3>, <&kp O>, <&kp F>, <&kp DOT>, <&kp LS(F)>, <&kp R>, <&kp LS(E)>, <&kp E>, <&kp N1>, <&kp LS(W)>, <&kp I>, <&kp L>, <&kp L>, <&kp N4>;
+      bindings = <&kp LS(L)>, <&kp A>, <&kp C>, <&kp K>, <&kp N3>, <&kp O>, <&kp LS(F)>, <&kp DOT>, <&kp F>, <&kp R>, <&kp LS(E)>, <&kp E>, <&kp N1>, <&kp LS(W)>, <&kp I>, <&kp L>, <&kp L>, <&kp N4>;
     };
   };
 
