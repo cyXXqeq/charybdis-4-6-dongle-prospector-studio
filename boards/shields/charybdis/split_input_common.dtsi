@@ -31,12 +31,12 @@
 
     scroll {
       layers = <FN>;
-      input-processors = <&zip_xy_transform (INPUT_TRANSFORM_Y_INVERT)>, <&zip_xy_scaler 1 3>, <&zip_xy_to_scroll_mapper>;
+      input-processors = <&zip_xy_transform (INPUT_TRANSFORM_Y_INVERT)>, <&zip_xy_scaler 1 12>, <&zip_xy_to_scroll_mapper>;
     };
 
     move {
       layers = <DEF MOUSE>;
-      input-processors = <&auto_mouse_layer MOUSE 1000>;
+      input-processors = <&auto_mouse_layer MOUSE 200>;
     };
   };
 
