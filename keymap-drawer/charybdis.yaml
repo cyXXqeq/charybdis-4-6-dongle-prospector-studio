@@ -32,10 +32,10 @@ layers:
   - {t: F, h: LSHFT}
   - G
   - H
-  - {t: J, h: LSHFT}
-  - {t: K, h: LCTRL}
-  - {t: L, h: LALT}
-  - {t: ;, h: LGUI}
+  - {t: J, h: RSHFT}
+  - {t: K, h: RCTRL}
+  - {t: L, h: RALT}
+  - {t: ;, h: RGUI}
   - ''''
   - '`'
   - Z
@@ -146,10 +146,10 @@ layers:
   - {t: '=', h: LSHFT}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - LEFT
-  - DOWN
-  - UP
-  - RIGHT
+  - {t: LEFT, h: RSHFT}
+  - {t: DOWN, h: RCTRL}
+  - {t: UP, h: RALT}
+  - {t: RIGHT, h: RGUI}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - (
