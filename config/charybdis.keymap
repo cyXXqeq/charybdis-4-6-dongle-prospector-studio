@@ -21,6 +21,7 @@
 
 &sl {
   ignore-modifiers;
+  release-after-ms = <200>;
 };
 
 &mt {
@@ -138,11 +139,11 @@
       key-positions = <25 29>;
       bindings = <&to RESET>;
     };
-    combo_reset_central {
-      key-positions = <32 33>;
-      bindings = <&bootloader>;
-      require-prior-idle-ms = <2000>;
-    };
+//    combo_reset_central {
+//      key-positions = <32 33>;
+//      bindings = <&bootloader>;
+//      require-prior-idle-ms = <2000>;
+//    };
     combo_normal {
       key-positions = <7 8>;
       bindings = <&to BASE>;
@@ -171,6 +172,14 @@
       key-positions = <0 4>;
       bindings = <&studio_unlock>;
     };
+    combo_lang_ru {
+      key-positions = <44 45>;
+      bindings = <&kp F19>;
+    };
+    combo_lang_en {
+      key-positions = <38 39>;
+      bindings = <&kp F18>;
+    };
   };
   chosen {
     zmk,physical-layout = &charybdis_6col_layout;
@@ -192,9 +201,9 @@
         // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────────┤
               &kp GRAVE      &kp Z          &kp X         &kp C         &kp V         &kp B             &kp N         &kp M      &kp COMMA      &kp DOT       &kp FSLH     &kp BACKSPACE
         // ╰─────────────┴─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┴─────────────────╯
-                                                          &mo 1         &mo 3       &kp SPACE           &kp RET       &mo 2 
+                                                          &kp F24    &lt 3 SPACE    &kp SPACE          &kp RET     &lt 2 RET 
         //                                           ╰─────────────┤─────────────┤─────────────┤   ├─────────────┼─────────────╯
-                                                                       &kp F24       &mo 4          &kp RIGHT_BRACKET
+                                                                        &mo 1         &mo 4        &kp RIGHT_BRACKET
         //                                                         ╰─────────────┴─────────────╯   ╰─────────────╯
         >;
     };
@@ -221,9 +230,9 @@
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
              &trans         &trans       &trans         &trans       &trans         &trans           &trans       &kp HOME    &kp PAGE_DOWN  &kp PAGE_UP     &kp END       &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
-      &trans &mt LGUI LEFT_BRACKET &mt LALT RIGHT_BRACKET &mt LCTRL MINUS &mt LSHFT EQUAL &trans     &trans     &mt RSHFT LEFT &mt RCTRL DOWN &mt RALT UP  &mt RGUI RIGHT  &trans
+      &trans &mt LGUI LEFT_BRACKET &mt LALT RIGHT_BRACKET &mt LCTRL MINUS &mt LSHFT EQUAL &trans     &trans     &mt RSHFT LEFT &mt RCTRL DOWN &mt RALT UP &mt RGUI RIGHT  &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
-             &trans        &kp LPAR      &kp RPAR       &trans        &trans        &trans            &trans       &trans        &trans       &trans       &kp BACKSLASH    &trans
+             &trans        &kp LPAR      &kp RPAR       &trans        &trans        &trans           &trans        &trans       &kp KP_N1     &kp KP_N2   &kp BACKSLASH    &trans
       // ╰─────────────┴─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┴─────────────╯
                                                         &trans       &trans        &trans            &trans        &trans    
       //                                           ╰─────────────┤─────────────┤─────────────┤   ├─────────────┼─────────────╯
