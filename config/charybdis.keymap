@@ -139,11 +139,11 @@
       key-positions = <25 29>;
       bindings = <&to RESET>;
     };
-//    combo_reset_central {
-//      key-positions = <32 33>;
-//      bindings = <&bootloader>;
-//      require-prior-idle-ms = <2000>;
-//    };
+    combo_reset_central {
+      key-positions = <8 9>;
+      bindings = <&bootloader>;
+      require-prior-idle-ms = <2000>;
+    };
     combo_normal {
       key-positions = <7 8>;
       bindings = <&to BASE>;
