@@ -51,11 +51,11 @@ layers:
   - BACK SPACE
   - F24
   - {t: SPACE, h: Number}
-  - Function
+  - SPACE
   - RET
   - {t: RET, h: Symbol}
   - Mouse
-  - SPACE
+  - Function
   - ']'
   Mouse:
   - {t: ▽, type: trans}
@@ -279,11 +279,11 @@ layers:
   - {t: Base, h: toggle}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
   - {type: held}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   Game:
   - {t: ▽, type: trans}
