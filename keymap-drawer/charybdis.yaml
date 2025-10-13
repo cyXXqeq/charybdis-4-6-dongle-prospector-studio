@@ -404,6 +404,8 @@ combos:
   k: {t: Reset, h: toggle}
 - p: [25, 29]
   k: {t: Reset, h: toggle}
+- p: [8, 9]
+  k: BOOT LDR
 - p: [7, 8]
   k: {t: Base, h: toggle}
 - p: [27, 28]
