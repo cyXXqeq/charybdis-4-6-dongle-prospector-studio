@@ -21,7 +21,7 @@
 
 &sl {
   ignore-modifiers;
-  release-after-ms = <200>;
+  release-after-ms = <100>;
 };
 
 &mt {
