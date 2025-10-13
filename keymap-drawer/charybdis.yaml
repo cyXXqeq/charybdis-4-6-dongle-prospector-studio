@@ -49,12 +49,12 @@ layers:
   - .
   - /
   - BACK SPACE
-  - Mouse
-  - Number
+  - F24
+  - {t: SPACE, h: Number}
   - SPACE
   - RET
-  - Symbol
-  - F24
+  - {t: RET, h: Symbol}
+  - Mouse
   - Function
   - ']'
   Mouse:
@@ -106,12 +106,12 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: '&mkp MB1', type: held}
+  - '&mkp MB1'
   - '&mkp MB2'
   - '&mkp MB3'
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - {type: held}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   Symbol:
@@ -159,8 +159,8 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - KP 1
+  - KP 2
   - \
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -404,7 +404,7 @@ combos:
   k: {t: Reset, h: toggle}
 - p: [25, 29]
   k: {t: Reset, h: toggle}
-- p: [32, 33]
+- p: [8, 9]
   k: BOOT LDR
 - p: [7, 8]
   k: {t: Base, h: toggle}
@@ -420,3 +420,7 @@ combos:
   k: Ctl+ BACK SPACE
 - p: [0, 4]
   k: ZMK Studio
+- p: [44, 45]
+  k: F19
+- p: [38, 39]
+  k: F18
