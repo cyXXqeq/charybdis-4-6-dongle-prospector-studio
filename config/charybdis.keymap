@@ -148,10 +148,10 @@
       key-positions = <7 8>;
       bindings = <&to BASE>;
     };
-    combo_fn {
-      key-positions = <27 28>;
-      bindings = <&sl FUNCTION>;
-    };
+//    combo_fn {
+//      key-positions = <27 28>;
+//      bindings = <&sl FUNCTION>;
+//    };
     combo_genshin {
       key-positions = <5 9>;
       bindings = <&to GAME>;
