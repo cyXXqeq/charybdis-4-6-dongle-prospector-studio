@@ -152,9 +152,13 @@
 //      key-positions = <27 28>;
 //      bindings = <&sl FUNCTION>;
 //    };
-    combo_genshin {
-      key-positions = <5 9>;
-      bindings = <&to GAME>;
+//    combo_genshin {
+//      key-positions = <5 9>;
+//      bindings = <&to GAME>;
+//    };
+    combo_game_toggle {
+      key-positions = <10 11>;
+      bindings = <&tog GAME>;
     };
     combo_esc {
       key-positions = <1 2>;
@@ -290,11 +294,11 @@
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
              &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
-             &trans        &trans         &trans       &trans         &trans        &sl 4           &trans         &trans         &trans        &trans        &trans        &trans
+             &trans         &kp A         &kpS          &kp D         &kp F        &trans           &trans          &kp J         &kp K         &kp L       &kp SEMI        &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
              &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &to 0
       // ╰─────────────┴─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┴─────────────╯
-                                                        &trans       &trans         &trans            &trans        &trans    
+                                                        &trans      &kp SPACE      &trans            &trans        &trans    
       //                                           ╰─────────────┤─────────────┤─────────────┤   ├─────────────┼─────────────╯
                                                                       &trans        &trans            &trans
       //                                                         ╰─────────────┴─────────────╯   ╰─────────────╯
