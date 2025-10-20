@@ -158,7 +158,7 @@
 //    };
     combo_game_toggle {
       key-positions = <10 11>;
-      bindings = <&tog GAME>;
+      bindings = <&to GAME>;
     };
     combo_esc {
       key-positions = <1 2>;
