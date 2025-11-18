@@ -46,7 +46,7 @@ layers:
   - N
   - M
   - ','
-  - .
+  - {t: ., h: Mouse}
   - /
   - BACK SPACE
   - F24
@@ -85,8 +85,8 @@ layers:
   - {t: ▽, type: trans}
   - LGUI
   - LALT
-  - LSHFT
   - LCTRL
+  - LSHFT
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -103,7 +103,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - {type: held}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - '&mkp MB1'
@@ -111,7 +111,7 @@ layers:
   - '&mkp MB3'
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {type: held}
+  - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   Symbol:
