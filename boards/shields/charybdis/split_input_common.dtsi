@@ -35,8 +35,11 @@
     };
 
     move {
-      layers = <DEF MOUSE>;
-      input-processors = <&auto_mouse_layer MOUSE 50>;
+      // Trackball movement without automatic Mouse layer switching
+      layers = <DEF>;
+      // If you want automatic mouse layer activation back,
+      // re-enable the line below and add MOUSE to the layers above:
+      // input-processors = <&auto_mouse_layer MOUSE 400>;
     };
   };
 
