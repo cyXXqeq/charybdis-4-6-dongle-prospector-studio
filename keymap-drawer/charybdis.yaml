@@ -311,16 +311,16 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
+  - A
+  - S
+  - D
+  - F
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: Function, h: sticky}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - J
+  - K
+  - L
+  - ;
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -335,7 +335,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: Base, h: toggle}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - SPACE
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -408,7 +408,7 @@ combos:
   k: BOOT LDR
 - p: [7, 8]
   k: {t: Base, h: toggle}
-- p: [5, 9]
+- p: [10, 11]
   k: {t: Game, h: toggle}
 - p: [1, 2]
   k: ESCAPE
