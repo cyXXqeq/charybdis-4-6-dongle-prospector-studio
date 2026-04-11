@@ -85,7 +85,7 @@ jobs:
       drawings: ${{ steps.artifact-upload-step.outputs.artifact-id }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # So the reference to the parent commit is available when amending
           # See:
@@ -233,7 +233,7 @@ jobs:
 
       - name: Commit updated images
         if: ( inputs.destination == 'commit' || inputs.destination == 'both' )
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           file_pattern: "${{ inputs.output_folder }}/*.svg ${{ inputs.output_folder }}/*.yaml"
           # So the previous commit is amended instead of creating a new one when desired
