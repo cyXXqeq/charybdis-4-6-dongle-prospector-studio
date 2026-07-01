@@ -6,11 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a ZMK firmware configuration for the Charybdis 4x6 split ergonomic keyboard with trackball. The keyboard uses a three-controller dongle setup (left half, right half, dongle) and supports ZMK STUDIO for live keymap editing.
 
-**Build system**: Firmware is compiled via GitHub Actions using the ZMK build pipeline. There is no local build command — all builds are triggered by pushing to the repository.
+**Build system**: Firmware can be compiled via GitHub Actions using the ZMK build pipeline, or locally through the Make targets backed by `scripts/zmk-build`.
 
 ## Building Firmware
 
 Push changes to trigger the GitHub Actions workflow (`.github/workflows/build.yml`), which uses `zmkfirmware/zmk/.github/workflows/build-user-config.yml`. Build artifacts are downloadable from the Actions tab.
+
+Local build helpers:
+- `make zmk-list` — list targets parsed from `build.yaml`
+- `make zmk-dongle` — build the nice_nano dongle firmware
+- `make zmk-docker-dongle` — build the nice_nano dongle firmware in the same `zmkfirmware/zmk-build-arm:stable` image used by GitHub Actions
+- `make zmk-all` — build every target from `build.yaml`
+
+Local build outputs are written to `artifacts/firmware/`. The local west workspace and build cache live under `.zmk-local/`.
 
 The `build.yaml` defines the matrix of firmware targets:
 - `charybdis_dongle` + `nice_nano_v2` — dongle firmware for Nice Nano v2

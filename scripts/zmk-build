@@ -1,0 +1,741 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import fcntl
+import os
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import time
+import venv
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
+from pathlib import Path
+
+
+LOCAL_DIR = ".zmk-local"
+WORKSPACE_DIR = Path(LOCAL_DIR) / "workspace"
+BUILD_DIR = Path(LOCAL_DIR) / "build"
+ARTIFACT_DIR = Path("artifacts") / "firmware"
+CONFIG_DIR = "config"
+LOCK_DIR = Path(LOCAL_DIR) / "locks"
+DEFAULT_TARGET = "dongle-nice"
+DEFAULT_ALL_JOBS = 1
+PROGRESS_RE = re.compile(r"\[(\d+)/(\d+)\]")
+PROGRESS_REFRESH_SECONDS = 0.2
+PROGRESS_PHASE_WIDTH = 11
+PROGRESS_COUNT_WIDTH = 9
+PROGRESS_MAX_BAR_WIDTH = 24
+PROGRESS_BUILD_PRE_COUNTER_END = 0.73
+PROGRESS_PHASE_RANGES = {
+    "starting": (0.00, 0.05),
+    "configuring": (0.05, 0.72),
+    "building": (0.72, 0.96),
+    "packaging": (0.96, 0.99),
+}
+PROGRESS_PHASE_SECONDS = {
+    "starting": 3.0,
+    "configuring": 10.0,
+    "building": 2.0,
+    "packaging": 2.0,
+}
+
+
+@dataclass
+class BuildProgress:
+    name: str
+    log_path: Path
+    status: str = "running"
+    phase: str = "starting"
+    current: int = 0
+    total: int = 0
+    estimated_ratio: float = 0.0
+    phase_started_at: float = field(default_factory=time.monotonic)
+    artifact: Path | None = None
+
+
+def repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+def env_int(name: str, default: int) -> int:
+    try:
+        return int(os.environ.get(name, default))
+    except ValueError:
+        return default
+
+
+def parse_scalar(value: str) -> str:
+    value = value.strip()
+    if not value:
+        return ""
+    if (value[0], value[-1]) in {("\"", "\""), ("'", "'")}:
+        return value[1:-1]
+    return value
+
+
+def load_build_matrix(root: Path) -> list[dict[str, str]]:
+    path = root / "build.yaml"
+    entries: list[dict[str, str]] = []
+    current: dict[str, str] | None = None
+    in_include = False
+
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.split("#", 1)[0].rstrip()
+        if not line.strip() or line.strip() == "---":
+            continue
+        if line == "include:":
+            in_include = True
+            continue
+        if not in_include:
+            continue
+        if line.startswith("  - "):
+            if current:
+                entries.append(current)
+            current = {}
+            rest = line[4:].strip()
+            if rest:
+                key, value = rest.split(":", 1)
+                current[key.strip()] = parse_scalar(value)
+            continue
+        if line.startswith("    ") and current is not None:
+            key, value = line.strip().split(":", 1)
+            current[key.strip()] = parse_scalar(value)
+
+    if current:
+        entries.append(current)
+    return entries
+
+
+def board_slug(entry: dict[str, str]) -> str:
+    return entry["board"].split("//", 1)[0].replace("/", "_")
+
+
+def target_name(entry: dict[str, str]) -> str:
+    shield = entry.get("shield", "").replace(" ", "+")
+    board = board_slug(entry)
+    return f"{shield}-{board}" if shield else board
+
+
+def artifact_name(entry: dict[str, str]) -> str:
+    if entry.get("artifact-name"):
+        return entry["artifact-name"]
+    board = entry["board"].replace("/", "_")
+    shield = entry.get("shield", "")
+    return f"{shield + '-' if shield else ''}{board}-zmk"
+
+
+def aliases(entries: list[dict[str, str]]) -> dict[str, str]:
+    result: dict[str, str] = {}
+    for entry in entries:
+        name = target_name(entry)
+        shield = entry.get("shield", "")
+        board = board_slug(entry)
+        if shield == "charybdis_dongle" and board == "nice_nano":
+            result.update(
+                {
+                    "dongle": name,
+                    "dongle-nice": name,
+                    "nice-dongle": name,
+                    "nice_nano-dongle": name,
+                }
+            )
+        elif shield == "charybdis_dongle prospector_adapter":
+            result.update({"prospector": name, "dongle-prospector": name})
+        elif shield == "charybdis_dongle" and board == "xiao_ble":
+            result.update({"dongle-xiao": name, "xiao-dongle": name})
+        elif shield == "charybdis_left":
+            result["left"] = name
+        elif shield == "charybdis_right":
+            result["right"] = name
+        elif shield == "settings_reset" and board == "nice_nano":
+            result.update({"reset-nice": name, "settings-reset-nice": name})
+        elif shield == "settings_reset" and board == "xiao_ble":
+            result.update({"reset-xiao": name, "settings-reset-xiao": name})
+    return result
+
+
+def select_entry(entries: list[dict[str, str]], requested: str) -> dict[str, str]:
+    alias_map = aliases(entries)
+    requested = alias_map.get(requested, requested)
+
+    exact = [
+        entry
+        for entry in entries
+        if requested in {target_name(entry), artifact_name(entry)}
+    ]
+    if len(exact) == 1:
+        return exact[0]
+
+    prefix = [entry for entry in entries if target_name(entry).startswith(requested)]
+    if len(prefix) == 1:
+        return prefix[0]
+    if not exact and not prefix:
+        raise SystemExit(f"Unknown build target: {requested}\nRun ./scripts/zmk-build list")
+    raise SystemExit(f"Ambiguous build target: {requested}\nRun ./scripts/zmk-build list")
+
+
+def run(
+    cmd: list[str],
+    cwd: Path,
+    env: dict[str, str] | None = None,
+    log_path: Path | None = None,
+) -> None:
+    if log_path is None:
+        print(f"+ cd {cwd}")
+        print(f"+ {shlex.join(cmd)}")
+        subprocess.run(cmd, cwd=cwd, env=env, check=True)
+        return
+
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("a", encoding="utf-8") as log:
+        log.write(f"+ cd {cwd}\n")
+        log.write(f"+ {shlex.join(cmd)}\n")
+        log.flush()
+        subprocess.run(cmd, cwd=cwd, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
+
+
+def append_log(log_path: Path | None, message: str) -> None:
+    if log_path is None:
+        return
+    with log_path.open("a", encoding="utf-8") as log:
+        log.write(f"{message}\n")
+
+
+def live_progress_enabled() -> bool:
+    return (
+        (sys.stdout.isatty() or sys.stderr.isatty() or os.path.exists("/dev/tty"))
+        and os.environ.get("TERM") != "dumb"
+        and os.environ.get("ZMK_PROGRESS", "1") != "0"
+    )
+
+
+def open_progress_stream():
+    if not live_progress_enabled():
+        return None
+    try:
+        return open("/dev/tty", "w", buffering=1, encoding="utf-8")
+    except OSError:
+        if sys.stderr.isatty():
+            return sys.stderr
+        if sys.stdout.isatty():
+            return sys.stdout
+    return None
+
+
+def terminal_color(text: str, code: str, enabled: bool) -> str:
+    if not enabled or os.environ.get("NO_COLOR"):
+        return text
+    return f"\033[{code}m{text}\033[0m"
+
+
+def truncate(text: str, width: int) -> str:
+    if len(text) <= width:
+        return text
+    if width <= 1:
+        return text[:width]
+    return text[: width - 1] + "~"
+
+
+def progress_bar(progress: BuildProgress, width: int) -> str:
+    if progress.status == "done":
+        return "#" * width
+
+    if progress.status == "failed":
+        return "!" * width
+
+    ratio = min(max(progress.estimated_ratio, 0), 0.99)
+    filled = int(width * ratio)
+    return "#" * filled + "-" * (width - filled)
+
+
+def set_progress_phase(progress: BuildProgress, phase: str) -> None:
+    if phase == progress.phase:
+        return
+
+    progress.phase = phase
+    progress.phase_started_at = time.monotonic()
+    start, _ = PROGRESS_PHASE_RANGES.get(phase, (progress.estimated_ratio, 1.0))
+    progress.estimated_ratio = max(progress.estimated_ratio, start)
+
+
+def update_estimated_progress(progress: BuildProgress) -> None:
+    if progress.status == "done":
+        progress.estimated_ratio = 1.0
+        return
+    if progress.status != "running":
+        return
+    if progress.phase == "building" and progress.total > 0:
+        return
+
+    start, end = PROGRESS_PHASE_RANGES.get(progress.phase, (0.0, 0.99))
+    if progress.phase == "building":
+        end = PROGRESS_BUILD_PRE_COUNTER_END
+    duration = PROGRESS_PHASE_SECONDS.get(progress.phase, 10.0)
+    elapsed = time.monotonic() - progress.phase_started_at
+    phase_ratio = min(max(elapsed / duration, 0.0), 0.96)
+    progress.estimated_ratio = max(
+        progress.estimated_ratio,
+        start + ((end - start) * phase_ratio),
+    )
+
+
+def refresh_progress(progress: BuildProgress) -> None:
+    if progress.status != "running":
+        return
+
+    try:
+        text = progress.log_path.read_text(encoding="utf-8", errors="replace")
+    except FileNotFoundError:
+        update_estimated_progress(progress)
+        return
+
+    phase_markers: list[tuple[int, str]] = []
+    for marker, phase in [
+        ("-- west build: generating a build system", "configuring"),
+        ("-- west build: building application", "building"),
+        ("Generating files from", "packaging"),
+        ("Converted to uf2", "packaging"),
+    ]:
+        position = text.rfind(marker)
+        if position >= 0:
+            phase_markers.append((position, phase))
+
+    if phase_markers:
+        _, phase = max(phase_markers)
+        set_progress_phase(progress, phase)
+    elif text.strip():
+        set_progress_phase(progress, "starting")
+
+    matches = list(PROGRESS_RE.finditer(text))
+    if matches:
+        current, total = matches[-1].groups()
+        current_int = int(current)
+        total_int = int(total)
+        if total_int != progress.total or current_int >= progress.current:
+            progress.current = current_int
+            progress.total = total_int
+            start, end = PROGRESS_PHASE_RANGES["building"]
+            ratio = min(max(current_int / total_int, 0.0), 1.0)
+            progress.estimated_ratio = max(
+                progress.estimated_ratio,
+                start + ((end - start) * ratio),
+            )
+
+    update_estimated_progress(progress)
+
+
+def format_progress_line(
+    progress: BuildProgress,
+    *,
+    name_width: int,
+    bar_width: int,
+    color_enabled: bool,
+) -> str:
+    if progress.status == "done":
+        status = terminal_color("OK  ", "32", color_enabled)
+        percent = "100%"
+        count = f"{progress.total}/{progress.total}" if progress.total else "done"
+        phase = "done"
+    elif progress.status == "failed":
+        status = terminal_color("FAIL", "31", color_enabled)
+        percent = "ERR "
+        count = f"{progress.current}/{progress.total}" if progress.total else "error"
+        phase = "failed"
+    else:
+        status = terminal_color("RUN ", "36", color_enabled)
+        percent = f"{int(progress.estimated_ratio * 100):3d}%"
+        count = f"{progress.current}/{progress.total}" if progress.total else "estimate"
+        phase = progress.phase
+
+    name = truncate(progress.name, name_width).ljust(name_width)
+    bar = progress_bar(progress, bar_width)
+    count = truncate(count, PROGRESS_COUNT_WIDTH).rjust(PROGRESS_COUNT_WIDTH)
+    phase = truncate(phase, PROGRESS_PHASE_WIDTH).ljust(PROGRESS_PHASE_WIDTH)
+    return f"[{status}] {name} [{bar}] {percent} {count} {phase}"
+
+
+def progress_layout(terminal_width: int, max_name_width: int) -> tuple[int, int]:
+    max_line_width = max(20, terminal_width - 1)
+    fixed_width = 26 + PROGRESS_PHASE_WIDTH
+    available = max(2, max_line_width - fixed_width)
+    bar_floor = min(
+        10 if available >= 24 else max(3, available // 3),
+        max(1, available - 1),
+    )
+    name_width = min(max_name_width, max(1, available - bar_floor))
+    bar_width = min(PROGRESS_MAX_BAR_WIDTH, max(1, available - name_width))
+
+    if name_width + bar_width > available:
+        name_width = max(1, available - bar_width)
+
+    return name_width, bar_width
+
+
+def render_progress(
+    progresses: list[BuildProgress],
+    *,
+    rendered: bool,
+    stream,
+) -> bool:
+    if stream is None:
+        return False
+
+    terminal_width = shutil.get_terminal_size((80, 24)).columns
+    max_name_width = max(len(progress.name) for progress in progresses)
+    name_width, bar_width = progress_layout(terminal_width, max_name_width)
+    color_enabled = stream is not None
+
+    lines = [
+        format_progress_line(
+            progress,
+            name_width=name_width,
+            bar_width=bar_width,
+            color_enabled=color_enabled,
+        )
+        for progress in progresses
+    ]
+
+    if rendered:
+        stream.write(f"\033[{len(lines)}A")
+    for line in lines:
+        stream.write(f"\r\033[2K{line}\n")
+    stream.flush()
+    return True
+
+
+def sync_config(root: Path) -> None:
+    workspace = root / WORKSPACE_DIR
+    destination = workspace / CONFIG_DIR
+    workspace.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        shutil.rmtree(destination)
+    shutil.copytree(root / CONFIG_DIR, destination)
+
+
+def local_west(
+    root: Path,
+    use_system_west: bool = False,
+    log_path: Path | None = None,
+) -> Path | str:
+    if use_system_west or os.environ.get("ZMK_USE_SYSTEM_WEST") == "1":
+        west = shutil.which("west")
+        if not west:
+            raise SystemExit("west is not on PATH")
+        return west
+
+    venv_dir = root / LOCAL_DIR / ".venv"
+    west = venv_dir / "bin" / "west"
+    if west.exists():
+        return west
+
+    print(f"Creating Python virtualenv at {venv_dir}")
+    venv.EnvBuilder(with_pip=True).create(venv_dir)
+    python = venv_dir / "bin" / "python"
+    run([str(python), "-m", "pip", "install", "-U", "pip", "west"], root, log_path=log_path)
+    return west
+
+
+def setup_workspace(
+    root: Path,
+    *,
+    update: bool,
+    use_system_west: bool = False,
+    log_path: Path | None = None,
+) -> Path | str:
+    sync_config(root)
+    workspace = root / WORKSPACE_DIR
+    west = local_west(root, use_system_west=use_system_west, log_path=log_path)
+
+    if not (workspace / ".west").exists():
+        run([str(west), "init", "-l", str(workspace / CONFIG_DIR)], workspace, log_path=log_path)
+        update = True
+
+    if update or not (workspace / "zmk").exists():
+        run([str(west), "update", "--fetch-opt=--filter=tree:0"], workspace, log_path=log_path)
+        run([str(west), "zephyr-export"], workspace, log_path=log_path)
+        if os.environ.get("ZMK_SKIP_PIP_PACKAGES") != "1":
+            run([str(west), "packages", "pip", "--install"], workspace, log_path=log_path)
+    elif (workspace / "zephyr").exists():
+        run([str(west), "zephyr-export"], workspace, log_path=log_path)
+
+    return west
+
+
+def build_entry(
+    root: Path,
+    entry: dict[str, str],
+    *,
+    pristine: bool,
+    use_system_west: bool = False,
+    west: Path | str | None = None,
+    log_path: Path | None = None,
+) -> Path:
+    if west is None:
+        west = setup_workspace(root, update=False, use_system_west=use_system_west)
+    workspace = root / WORKSPACE_DIR
+    name = target_name(entry)
+    build_dir = root / BUILD_DIR / name
+    env = None
+    if log_path is not None:
+        env = os.environ.copy()
+        env["XDG_CACHE_HOME"] = str(root / LOCAL_DIR / "cache" / name)
+
+    cmd = [
+        str(west),
+        "build",
+        "-s",
+        str(workspace / "zmk" / "app"),
+        "-d",
+        str(build_dir),
+        "-b",
+        entry["board"],
+    ]
+    if entry.get("snippet"):
+        cmd.extend(["-S", entry["snippet"]])
+    if pristine:
+        cmd.extend(["-p", "always"])
+
+    cmake_args = [
+        f"-DZMK_CONFIG={workspace / CONFIG_DIR}",
+    ]
+    if entry.get("shield"):
+        cmake_args.append(f"-DSHIELD={entry['shield']}")
+    if (root / "zephyr" / "module.yml").exists():
+        cmake_args.append(f"-DZMK_EXTRA_MODULES={root}")
+    if entry.get("cmake-args"):
+        cmake_args.extend(shlex.split(entry["cmake-args"]))
+    cmd.append("--")
+    cmd.extend(cmake_args)
+
+    lock_dir = root / LOCK_DIR
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = lock_dir / f"{name}.lock"
+    append_log(log_path, f"Waiting for build lock: {lock_path.relative_to(root)}")
+    with lock_path.open("w", encoding="utf-8") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        append_log(log_path, f"Acquired build lock: {lock_path.relative_to(root)}")
+        run(cmd, workspace, env=env, log_path=log_path)
+
+        output = build_dir / "zephyr" / "zmk.uf2"
+        suffix = ".uf2"
+        if not output.exists():
+            output = build_dir / "zephyr" / "zmk.bin"
+            suffix = ".bin"
+        if not output.exists():
+            raise SystemExit(f"Build succeeded, but no zmk.uf2 or zmk.bin was found in {build_dir / 'zephyr'}")
+
+        artifact_dir = root / ARTIFACT_DIR
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+        artifact = artifact_dir / f"{artifact_name(entry)}{suffix}"
+        shutil.copy2(output, artifact)
+        if log_path is None:
+            print(f"Artifact: {artifact.relative_to(root)}")
+        return artifact
+
+
+def cmd_list(root: Path) -> None:
+    entries = load_build_matrix(root)
+    print("Targets from build.yaml:")
+    for entry in entries:
+        print(f"  {target_name(entry):42} -> {artifact_name(entry)}")
+    print()
+    print("Useful aliases:")
+    for alias, target in sorted(aliases(entries).items()):
+        print(f"  {alias:24} -> {target}")
+
+
+def build_entries_with_progress(
+    root: Path,
+    entries: list[dict[str, str]],
+    *,
+    pristine: bool,
+    jobs: int,
+    use_system_west: bool,
+) -> list[Path]:
+    if jobs < 1:
+        raise SystemExit("--jobs must be >= 1")
+
+    target_names = [target_name(entry) for entry in entries]
+    duplicate_targets = sorted({name for name in target_names if target_names.count(name) > 1})
+    if duplicate_targets:
+        raise SystemExit(f"Duplicate build targets: {', '.join(duplicate_targets)}")
+
+    log_dir = root / LOCAL_DIR / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    setup_log = log_dir / "setup.log"
+    setup_log.write_text("", encoding="utf-8")
+    west = setup_workspace(
+        root,
+        update=False,
+        use_system_west=use_system_west,
+        log_path=setup_log,
+    )
+    jobs = min(jobs, len(entries))
+
+    stream = open_progress_stream()
+    if len(entries) == 1:
+        print(f"Building {target_name(entries[0])}")
+    else:
+        print(f"Building {len(entries)} targets with {jobs} parallel jobs")
+    print(f"Logs: {log_dir.relative_to(root)}")
+
+    progresses: list[BuildProgress] = []
+    artifacts: list[Path] = []
+    failures: list[str] = []
+    if stream is not None:
+        stream.write("\033[?25l")
+        stream.flush()
+
+    try:
+        rendered = False
+        with ThreadPoolExecutor(max_workers=jobs) as executor:
+            futures = {}
+            for entry in entries:
+                name = target_name(entry)
+                progress = BuildProgress(name=name, log_path=log_dir / f"{name}.log")
+                progress.log_path.write_text("", encoding="utf-8")
+                progresses.append(progress)
+                futures[
+                    executor.submit(
+                        build_entry,
+                        root,
+                        entry,
+                        pristine=pristine,
+                        west=west,
+                        log_path=progress.log_path,
+                    )
+                ] = progress
+
+            pending = set(futures)
+            while pending:
+                for progress in progresses:
+                    refresh_progress(progress)
+
+                for future in list(pending):
+                    if not future.done():
+                        continue
+
+                    pending.remove(future)
+                    progress = futures[future]
+                    try:
+                        artifact = future.result()
+                        progress.status = "done"
+                        progress.phase = "done"
+                        if progress.total:
+                            progress.current = progress.total
+                        progress.artifact = artifact
+                        artifacts.append(artifact)
+                        if stream is None:
+                            print(f"Finished {progress.name}: {artifact.relative_to(root)}")
+                    except Exception:
+                        progress.status = "failed"
+                        progress.phase = "failed"
+                        failures.append(progress.name)
+                        if stream is None:
+                            print(f"Failed {progress.name}; log: {progress.log_path.relative_to(root)}")
+
+                rendered = render_progress(progresses, rendered=rendered, stream=stream)
+                if pending:
+                    time.sleep(PROGRESS_REFRESH_SECONDS)
+
+        for progress in progresses:
+            refresh_progress(progress)
+        rendered = render_progress(progresses, rendered=rendered, stream=stream)
+        if rendered:
+            stream.write("\n")
+            stream.flush()
+    finally:
+        if stream is not None:
+            stream.write("\033[?25h")
+            stream.flush()
+            if stream not in {sys.stdout, sys.stderr}:
+                stream.close()
+
+    if failures:
+        raise SystemExit(f"Failed targets: {', '.join(failures)}")
+    return artifacts
+
+
+def cmd_build(root: Path, args: argparse.Namespace) -> None:
+    entries = load_build_matrix(root)
+    if args.all:
+        build_entries_with_progress(
+            root,
+            entries,
+            pristine=args.pristine,
+            jobs=args.jobs,
+            use_system_west=args.system_west,
+        )
+        return
+
+    entry = select_entry(entries, args.target)
+    build_entries_with_progress(
+        root,
+        [entry],
+        pristine=args.pristine,
+        jobs=1,
+        use_system_west=args.system_west,
+    )
+
+
+def cmd_clean(root: Path, *, dist: bool) -> None:
+    for path in [root / BUILD_DIR, root / ARTIFACT_DIR]:
+        if path.exists():
+            shutil.rmtree(path)
+            print(f"Removed {path.relative_to(root)}")
+    if dist and (root / LOCAL_DIR).exists():
+        shutil.rmtree(root / LOCAL_DIR)
+        print(f"Removed {LOCAL_DIR}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Local ZMK build helper for this keyboard config.")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    subparsers.add_parser("list", help="List targets parsed from build.yaml")
+
+    setup = subparsers.add_parser("setup", help="Create/update the local west workspace")
+    setup.add_argument("--system-west", action="store_true", help="Use west from PATH instead of .zmk-local/.venv")
+
+    update = subparsers.add_parser("update", help="Run west update in the local workspace")
+    update.add_argument("--system-west", action="store_true", help="Use west from PATH instead of .zmk-local/.venv")
+
+    build = subparsers.add_parser("build", help="Build a target from build.yaml")
+    build.add_argument("target", nargs="?", default=DEFAULT_TARGET, help=f"Target or alias. Default: {DEFAULT_TARGET}")
+    build.add_argument("--all", action="store_true", help="Build every target from build.yaml")
+    build.add_argument(
+        "--jobs",
+        type=int,
+        default=env_int("ZMK_BUILD_JOBS", DEFAULT_ALL_JOBS),
+        help="Parallel jobs for --all. Default: $ZMK_BUILD_JOBS or 1",
+    )
+    build.add_argument("--pristine", action="store_true", help="Regenerate the target build directory")
+    build.add_argument("--system-west", action="store_true", help="Use west from PATH instead of .zmk-local/.venv")
+
+    clean = subparsers.add_parser("clean", help="Remove local build directories and firmware artifacts")
+    clean.add_argument("--dist", action="store_true", help=f"Also remove {LOCAL_DIR}/, including west modules")
+
+    args = parser.parse_args()
+    root = repo_root()
+
+    if args.command == "list":
+        cmd_list(root)
+    elif args.command == "setup":
+        setup_workspace(root, update=True, use_system_west=args.system_west)
+    elif args.command == "update":
+        setup_workspace(root, update=True, use_system_west=args.system_west)
+    elif args.command == "build":
+        cmd_build(root, args)
+    elif args.command == "clean":
+        cmd_clean(root, dist=args.dist)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except subprocess.CalledProcessError as exc:
+        raise SystemExit(exc.returncode) from exc

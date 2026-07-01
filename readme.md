@@ -101,13 +101,37 @@ ZMK STUDIO попросит вас разлочить клавиатуру дл�
 
 | File   | Comment                                                                 |
 | :----- | :---------------------------------------------------------------------- |
-| charybdis_dongle prospector_adapter-seeeduino_xiao_ble-zmk.uf2  | Если вы используете в качестве донгла проспектор, то вам надо будет прошивать его этим файлом |
-| charybdis_dongle-nice_nano_v2-zmk.uf2    | Если вы используете в качестве донгла контроллер nn, то вам надо будет прошивать его этим файлом |
-| charybdis_dongle-seeeduino_xiao_ble-zmk.uf2 | Если вы используете в качестве донгла xiao или его аналог, то вам надо будет прошивать его этим файлом |
-| charybdis_left-nice_nano_v2-zmk.uf2 | файл прошивкл для левой половины |
-| charybdis_right-nice_nano_v2-zmk.uf2 | Файл прошивки для правой половины |
-| settings_reset-nice_nano_v2-zmk.uf2 | Ресет файл для nice_nano_v2 |
-| settings_reset-seeeduino_xiao_ble-zmk.uf2 | Ресет файл для xiao и для проспектора |
+| charybdis_dongle-prospector_adapter-xiao_ble-zmk.uf2  | Если вы используете в качестве донгла проспектор, то вам надо будет прошивать его этим файлом |
+| charybdis_dongle-nice_nano-zmk.uf2    | Если вы используете в качестве донгла контроллер nn, то вам надо будет прошивать его этим файлом |
+| charybdis_dongle-xiao_ble-zmk.uf2 | Если вы используете в качестве донгла xiao или его аналог, то вам надо будет прошивать его этим файлом |
+| charybdis_left-nice_nano-zmk.uf2 | файл прошивкл для левой половины |
+| charybdis_right-nice_nano-zmk.uf2 | Файл прошивки для правой половины |
+| settings_reset-nice_nano-zmk.uf2 | Ресет файл для nice_nano |
+| settings_reset-xiao_ble-zmk.uf2 | Ресет файл для xiao и для проспектора |
+
+## Локальная сборка прошивки
+
+Для быстрой локальной сборки в репе есть `Makefile` и `scripts/zmk-build`. Для твоего nice_nano-донгла обычно достаточно:
+
+```sh
+make zmk-dongle
+```
+
+Если хочешь собрать в таком же Docker image, как GitHub Actions:
+
+```sh
+make zmk-docker-dongle
+```
+
+Полный набор прошивок собирается параллельно:
+
+```sh
+make zmk-docker-all
+```
+
+Во время сборки показывается компактный прогресс, а подробные логи пишутся в `.zmk-local/logs/`.
+
+UF2-файлы складываются в `artifacts/firmware/`. Подробности и первичная настройка описаны в `docs/local-build.md`.
 
 ## Для чего нужны ресет файлы
 

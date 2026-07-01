@@ -22,21 +22,28 @@ include:
     shield: charybdis_dongle
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
+    artifact-name: charybdis_dongle-nice_nano-zmk
   - board: xiao_ble//zmk
     shield: charybdis_dongle prospector_adapter
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
+    artifact-name: charybdis_dongle-prospector_adapter-xiao_ble-zmk
   - board: xiao_ble//zmk
     shield: charybdis_dongle
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y
+    artifact-name: charybdis_dongle-xiao_ble-zmk
 
   - board: xiao_ble//zmk
     shield: settings_reset
+    artifact-name: settings_reset-xiao_ble-zmk
   - board: nice_nano//zmk
     shield: settings_reset
+    artifact-name: settings_reset-nice_nano-zmk
 
   - board: nice_nano//zmk
     shield: charybdis_left
+    artifact-name: charybdis_left-nice_nano-zmk
   - board: nice_nano//zmk
     shield: charybdis_right
+    artifact-name: charybdis_right-nice_nano-zmk
