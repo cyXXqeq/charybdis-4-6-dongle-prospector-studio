@@ -1,5 +1,7 @@
 #include <behaviors.dtsi>
+#include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/outputs.h>
 #include <dt-bindings/zmk/pointing.h>
 
 #define BASE 0
@@ -285,7 +287,7 @@
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
              &trans        &trans       &macro_m3     &macro_m2     &macro_m1      &trans           &trans       &kp C_PREV   &kp C_VOL_DN  &kp C_VOL_UP    &kp C_NEXT      &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
-             &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &to 0
+           &bt BT_CLR    &bt BT_SEL 0  &bt BT_SEL 1 &out OUT_BLE  &out OUT_USB    &trans           &trans         &trans         &trans        &trans        &trans        &to 0
       // ╰─────────────┴─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┴─────────────╯
                                                         &trans       &trans         &trans            &trans        &trans    
       //                                           ╰─────────────┤─────────────┤─────────────┤   ├─────────────┼─────────────╯
