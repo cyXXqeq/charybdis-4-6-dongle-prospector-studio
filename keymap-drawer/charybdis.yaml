@@ -52,10 +52,10 @@ layers:
   - F24
   - {t: SPACE, h: Number}
   - SPACE
-  - RET
-  - {t: RET, h: Symbol}
   - Mouse
   - Function
+  - RET
+  - {t: RET, h: Symbol}
   - ']'
   Mouse:
   - {t: ▽, type: trans}
@@ -167,9 +167,9 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
   - {type: held}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   Number:
   - {t: ▽, type: trans}
@@ -281,9 +281,9 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
   - {type: held}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   Game:
   - {t: ▽, type: trans}
