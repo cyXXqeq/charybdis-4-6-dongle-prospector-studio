@@ -39,6 +39,16 @@ All dongle builds include `-DCONFIG_ZMK_STUDIO=y` and the `studio-rpc-usb-uart` 
 - Push commits only after the user explicitly approves the push. Approval applies to the current requested push, not to future changes.
 - Before pushing, fetch the remote branch and account for CI-generated keymap commits that may have amended the remote tip.
 
+### CI keymap redraw rewrites the pushed commit
+
+- `.github/workflows/build.yml` runs on every push and pull request. After a successful firmware build, its `keymap_images` job calls `.github/workflows/draw_keymaps.yaml`.
+- The keymap workflow regenerates `keymap-drawer/charybdis.yaml` and `keymap-drawer/charybdis.svg`. With its current default `amend_commit: true`, changed generated files are committed with `git commit --amend --no-edit` and pushed with `--force-with-lease`.
+- Consequently, CI may replace the commit that was just pushed instead of adding a child commit. The commit message stays the same, but `origin/main` gets a new SHA and the local branch appears to have diverged. If the generated files are unchanged, no rewrite is needed and the SHA can remain unchanged.
+- After every push, wait for the workflow to finish and run `git fetch origin` before starting or committing more work. Compare `HEAD` with `origin/main`; do not rely only on a previously observed clean status.
+- If the only divergence is the CI-amended replacement and there is no unique local or uncommitted work, realign the local branch to `origin/main` before editing. Do not merge the stale pre-CI tip with the amended tip, because that creates a redundant merge between two versions of the same logical commit.
+- If local work already exists, preserve it and inspect both histories before reconciling them. Never discard local changes merely to match the CI rewrite.
+- Treat the generated YAML and SVG in the amended remote commit as authoritative output. Do not overwrite them by pushing again from the stale pre-CI commit.
+
 ## Repository Structure
 
 ```
@@ -121,4 +131,4 @@ The auto mouse layer (`&auto_mouse_layer MOUSE 400`) is currently **disabled** i
 Edit the `cpi` value in `boards/shields/charybdis/charybdis_3610.dtsi`. This sensor node is compiled only into the right-half firmware, so only the right half needs to be reflashed for a CPI-only change. Changes to the input-processing pipeline in `split_input_common.dtsi` can affect both the right half and dongle; rebuild and flash each target that compiles the changed node.
 
 ## Keymap Diagrams
-After each push, CI auto-generates SVG keymap diagrams via `keymap-drawer` and force-pushes an amended version of the tip commit. The `draw_keymaps.yaml` workflow uses `keymap-drawer/config.yaml` for styling and `keymap-drawer/charybdis.yaml` as intermediate parse output. Fetch `origin` again after CI finishes before adding more commits, because the local and remote tip hashes may differ even when only generated files changed.
+After each successful build, CI auto-generates SVG keymap diagrams via `keymap-drawer`. The `draw_keymaps.yaml` workflow uses `keymap-drawer/config.yaml` for styling and `keymap-drawer/charybdis.yaml` as intermediate parse output. See **CI keymap redraw rewrites the pushed commit** under **Git Workflow** for the required fetch and history-reconciliation procedure.
