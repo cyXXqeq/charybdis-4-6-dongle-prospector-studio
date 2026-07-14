@@ -32,6 +32,13 @@ The `build.yaml` defines the matrix of firmware targets:
 
 All dongle builds include `-DCONFIG_ZMK_STUDIO=y` and the `studio-rpc-usb-uart` snippet for ZMK STUDIO support.
 
+## Git Workflow
+
+- Create a commit after every completed code fix before handing the work back to the user.
+- Include documentation and repository-guidance updates in the commit when they are part of the requested change.
+- Push commits only after the user explicitly approves the push. Approval applies to the current requested push, not to future changes.
+- Before pushing, fetch the remote branch and account for CI-generated keymap commits that may have amended the remote tip.
+
 ## Repository Structure
 
 ```
@@ -61,6 +68,10 @@ scripts/
 tools/
   battery_tui.py          # BLE battery reader and full-screen TUI
   chbat                   # Unified command wrapper; defaults to TUI
+
+docs/
+  battery-monitor.md      # Installation, usage, and troubleshooting for chbat
+  local-build.md          # Local ZMK build setup and workflow
 
 keymap-drawer/
   config.yaml             # keymap-drawer rendering config
