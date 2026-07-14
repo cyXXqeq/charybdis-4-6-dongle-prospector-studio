@@ -3,6 +3,8 @@ ZMK_DOCKER_IMAGE ?= zmkfirmware/zmk-build-arm:stable
 ZMK_BUILD_JOBS ?= 7
 ZMK_TERM_COLUMNS ?= $(shell tput cols 2>/dev/null || echo 80)
 ZMK_TERM_LINES ?= $(shell tput lines 2>/dev/null || echo 24)
+BATTERY_TUI_ARGS ?=
+BATTERY_CLI_BIN ?= $(HOME)/.local/bin
 
 .PHONY: help
 help:
@@ -19,6 +21,9 @@ help:
 	@echo "  make zmk-clean            Remove local build outputs"
 	@echo "  make zmk-docker-dongle    Build nice_nano dongle in the GitHub Actions ZMK image"
 	@echo "  make zmk-docker-all       Build every target with ZMK_BUILD_JOBS=$(ZMK_BUILD_JOBS)"
+	@echo "  make battery-tui          Show both half-battery levels over BLE"
+	@echo "  make battery-read         Print both half-battery levels once"
+	@echo "  make install-battery-cli  Install the unified chbat command"
 
 .PHONY: zmk-list
 zmk-list:
@@ -92,3 +97,15 @@ zmk-docker-all:
 		-w /work \
 		$(ZMK_DOCKER_IMAGE) \
 		bash -lc './scripts/zmk-build build --system-west --all --jobs $(ZMK_BUILD_JOBS)'
+
+.PHONY: battery-tui
+battery-tui:
+	@uv run tools/battery_tui.py --tui $(BATTERY_TUI_ARGS)
+
+.PHONY: battery-read
+battery-read:
+	@uv run tools/battery_tui.py --short $(BATTERY_TUI_ARGS)
+
+.PHONY: install-battery-cli
+install-battery-cli:
+	@CHBAT_BIN_DIR="$(BATTERY_CLI_BIN)" ./scripts/install-chbat

@@ -1,0 +1,43 @@
+#!/bin/sh
+
+set -eu
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+repo_dir=$(dirname -- "$script_dir")
+source_path="$repo_dir/tools/chbat"
+bin_dir=${CHBAT_BIN_DIR:-"$HOME/.local/bin"}
+destination="$bin_dir/chbat"
+
+if [ ! -x "$source_path" ]; then
+    echo "install-chbat: $source_path is missing or is not executable" >&2
+    exit 1
+fi
+
+mkdir -p "$bin_dir"
+
+if [ -L "$destination" ]; then
+    current_target=$(readlink "$destination")
+    if [ "$current_target" = "$source_path" ]; then
+        echo "chbat is already installed at $destination"
+        exit 0
+    fi
+    echo "install-chbat: $destination points to $current_target; not replacing it" >&2
+    exit 1
+fi
+
+if [ -e "$destination" ]; then
+    echo "install-chbat: $destination already exists; not replacing it" >&2
+    exit 1
+fi
+
+ln -s "$source_path" "$destination"
+echo "Installed chbat at $destination"
+
+case ":$PATH:" in
+    *":$bin_dir:"*) ;;
+    *)
+        echo "Warning: $bin_dir is not in PATH." >&2
+        echo "Add this line to your shell configuration:" >&2
+        echo "  export PATH=\"$bin_dir:\$PATH\"" >&2
+        ;;
+esac
