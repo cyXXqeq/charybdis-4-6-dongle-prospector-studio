@@ -80,12 +80,14 @@ The studio unlock combo is keys 1+5 (first and fifth key pressed simultaneously)
 The auto mouse layer (`&auto_mouse_layer MOUSE 400`) is currently **disabled** in `split_input_common.dtsi`. Re-enable by uncommenting that line in the `move` block.
 
 ## External Dependencies (`config/west.yml`)
-- `zmkfirmware/zmk` — main ZMK framework (main branch)
-- `badjeff/zmk-pmw3610-driver` — PMW3610 trackball sensor driver
-- `carrefinho/prospector-zmk-module` — Prospector controller support
+- `zmkfirmware/zmk` — main ZMK framework, pinned to a tested commit
+- `badjeff/zmk-pmw3610-driver` — PMW3610 trackball sensor driver, pinned to a tested commit
+- `carrefinho/prospector-zmk-module` — Prospector controller support, pinned to a tested commit from `feat/new-status-screens`
+
+Keep these dependencies on exact commit SHAs for reproducible local and CI builds.
 
 ## Modifying Trackball Sensitivity
-Edit `cpi` value in `boards/shields/charybdis/charybdis_3610.dtsi`. After changing CPI, both the dongle **and** the right half (which hosts the trackball) must be reflashed.
+Edit `cpi` in `boards/shields/charybdis/charybdis_3610.dtsi`. The sensor node and the report-rate limiter in `config/charybdis_right.conf` are compiled only into the right-half firmware, so only the right half must be reflashed for CPI- or report-interval-only changes. Changes in `split_input_common.dtsi` can require both the right half and dongle.
 
 ## Keymap Diagrams
 After each push, CI auto-generates SVG keymap diagrams via `keymap-drawer` and amends the commit. The `draw_keymaps.yaml` workflow uses `keymap-drawer/config.yaml` for styling and `keymap-drawer/charybdis.yaml` as intermediate parse output.
