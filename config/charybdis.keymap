@@ -159,14 +159,6 @@
       key-positions = <7 8>;
       bindings = <&to BASE>;
     };
-//    combo_fn {
-//      key-positions = <27 28>;
-//      bindings = <&sl FUNCTION>;
-//    };
-//    combo_genshin {
-//      key-positions = <5 9>;
-//      bindings = <&to GAME>;
-//    };
     combo_game_toggle {
       key-positions = <10 11>;
       bindings = <&tog GAME>;
@@ -294,13 +286,13 @@
       // ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮   ╭─────────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────────╮
              &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
-             &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &trans
+             &trans        &trans         &kp Q         &kp M         &kp E         &kp R           &trans         &trans         &trans        &trans        &trans        &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
-            &trans         &kp A         &kp S         &kp D         &kp F        &trans           &trans          &kp J         &kp K         &kp L       &kp SEMI        &trans
+             &kp TAB      &kp LSHIFT       &kp A         &kp W         &kp D         &kp F           &trans          &kp J         &kp K         &kp L       &kp SEMI        &trans
       // ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
-             &trans        &trans         &trans       &trans         &trans       &trans           &trans         &trans         &trans        &trans        &trans        &to 0
+               &kp G         &kp Z         &kp X         &kp S         &kp V         &kp B           &trans         &trans         &trans        &trans        &trans        &to 0
       // ╰─────────────┴─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤   ├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┴─────────────╯
-                           &trans       &kp SPACE       &trans        &trans       &trans            &trans        &trans        &trans
+                           &trans       &kp SPACE     &kp LCTRL        &trans       &trans            &trans        &trans        &trans
       //                                           ╰─────────────┤─────────────┤─────────────┤   ├─────────────┼─────────────╯
       >;
     };
