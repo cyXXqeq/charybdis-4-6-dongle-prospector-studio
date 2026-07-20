@@ -265,9 +265,9 @@ layers:
   - VOL UP
   - NEXT
   - {t: ▽, type: trans}
-  - BT CLR
   - {t: BT, h: '0'}
   - {t: BT, h: '1'}
+  - {t: BT, h: '2'}
   - OUT BLE
   - OUT USB
   - {t: ▽, type: trans}
@@ -276,7 +276,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: Base, h: toggle}
+  - BT CLR
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
