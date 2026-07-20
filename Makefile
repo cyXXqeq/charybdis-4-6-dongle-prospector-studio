@@ -1,8 +1,9 @@
 ZMK_TARGET ?= dongle-nice
 ZMK_DOCKER_IMAGE ?= zmkfirmware/zmk-build-arm:stable
 ZMK_BUILD_JOBS ?= 7
-ZMK_TERM_COLUMNS ?= $(shell tput cols 2>/dev/null || echo 80)
-ZMK_TERM_LINES ?= $(shell tput lines 2>/dev/null || echo 24)
+# Docker recipes resolve these after `stty size` reads the recipe's terminal stdin.
+ZMK_TERM_COLUMNS ?= $$2
+ZMK_TERM_LINES ?= $$1
 BATTERY_TUI_ARGS ?=
 BATTERY_CLI_BIN ?= $(HOME)/.local/bin
 
@@ -71,7 +72,8 @@ zmk-distclean:
 
 .PHONY: zmk-docker-dongle
 zmk-docker-dongle:
-	@docker run --rm -t \
+	@set -- $$(stty size 2>/dev/null || echo 24 80); \
+		docker run --rm -t \
 		--user "$$(id -u):$$(id -g)" \
 		-e HOME=/tmp \
 		-e ZMK_USE_SYSTEM_WEST=1 \
@@ -85,7 +87,8 @@ zmk-docker-dongle:
 
 .PHONY: zmk-docker-all
 zmk-docker-all:
-	@docker run --rm -t \
+	@set -- $$(stty size 2>/dev/null || echo 24 80); \
+		docker run --rm -t \
 		--user "$$(id -u):$$(id -g)" \
 		-e HOME=/tmp \
 		-e ZMK_USE_SYSTEM_WEST=1 \
